@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Checklist de Revisión Vehicular</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #1c3e5c;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label, input, textarea {
+      width: 100%;
+      font-size: 1rem;
+      margin: 5px 0;
+    }
+
+    input[type="text"],
+    textarea {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fefefe;
+      resize: vertical;
+    }
+
+    .checklist-item {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f0f4f8;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .comentario,
+    .evidencia {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .comentario {
+      height: 60px;
+    }
+
+    .evidencia {
+      font-size: 0.95rem;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #resultado {
+      margin-top: 30px;
+      background: #ffffff;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #resultado ul {
+      padding-left: 20px;
+    }
+
+    img, video {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+
+    @media print {
+      button, input[type="text"], input[type="file"], textarea, .comentario, .evidencia {
+        display: none;
+      }
+
+      #resultado {
+        border: none;
+        background: none;
+        padding: 0;
+      }
+
+      body {
+        background: white;
+        color: black;
+      }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      input[type="text"],
+      textarea,
+      input[type="file"] {
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .checklist-item {
+        padding: 8px;
+      }
+
+      .comentario {
+        height: 50px;
+      }
+
+      #resultado {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Checklist de Revisión Vehicular</h1>
+
+    <label for="conductor">Nombre del Conductor:</label>
+    <input type="text" id="conductor">
+
+    <label for="matricula">Matrícula del Vehículo:</label>
+    <input type="text" id="matricula">
+
+    <h3>Revisar los siguientes ítems:</h3>
+    <div id="checklist"></div>
+
+    <button onclick="generarReporte()">Generar Reporte</button>
+    <button onclick="guardarComoPDF()">Guardar como PDF</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    const itemsChecklist = [
+      'Luces delanteras', 'Luces traseras', 'Luces direccionales',
+      'Freno de servicio', 'Freno de mano', 'Neumáticos',
+      'Nivel de aceite', 'Nivel de refrigerante', 'Nivel de freno',
+      'Nivel de dirección hidráulica', 'Espejos retrovisores', 'Limpiaparabrisas',
+      'Bocina', 'Batería', 'Correa de distribución', 'Filtro de aire',
+      'Fugas de líquidos', 'Estado del parabrisas', 'Herramientas de emergencia',
+      'Extintor de incendios', 'Luces interiores', 'Luces de freno', 'Claxon (bocina)',
+      'Cinturones de seguridad', 'Airbags', 'Estado de los asientos',
+      'Estado de puertas y cerraduras', 'Ventanas eléctricas/manuales',
+      'Aire acondicionado o calefacción', 'Filtro de cabina', 'Suspensión',
+      'Amortiguadores', 'Dirección asistida', 'Escape/silenciador',
+      'Tapón del combustible', 'Señales de advertencia en tablero',
+      'Kilometraje actual', 'Estado de la carrocería',
+      'Documentación del vehículo', 'Fecha de la próxima revisión técnica'
+    ];
+
+    const checklistDiv = document.getElementById("checklist");
+
+    itemsChecklist.forEach((item, index) => {
+      const id = `item${index}`;
+      const cont = document.createElement("div");
+      cont.className = "checklist-item";
+
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" id="${id}" checked> ${item}`;
+      cont.appendChild(label);
+
+      const comentario = document.createElement("textarea");
+      comentario.className = "comentario";
+      comentario.placeholder = "Agregar comentario (obligatorio si está FALTA)";
+      comentario.id = `comentario${index}`;
+      cont.appendChild(comentario);
+
+      const evidencia = document.createElement("input");
+      evidencia.type = "file";
+      evidencia.className = "evidencia";
+      evidencia.accept = "image/*,video/*";
+      evidencia.id = `archivo${index}`;
+      cont.appendChild(evidencia);
+
+      const checkbox = label.querySelector("input");
+      checkbox.addEventListener("change", () => {
+        if (!checkbox.checked) {
+          comentario.style.display = "block";
+          evidencia.style.display = "block";
+        } else {
+          comentario.style.display = "none";
+          evidencia.style.display = "none";
+        }
+      });
+
+      checklistDiv.appendChild(cont);
+    });
+
+    function generarReporte() {
+      const conductor = document.getElementById('conductor').value.trim();
+      const matricula = document.getElementById('matricula').value.trim();
+      let resultado = `<strong>Conductor:</strong> ${conductor}<br>`;
+      resultado += `<strong>Matrícula:</strong> ${matricula}<br><br>`;
+      resultado += `<strong>Resultado del checklist:</strong><ul>`;
+
+      const evidenciaHTML = [];
+
+      for (let index = 0; index < itemsChecklist.length; index++) {
+        const item = itemsChecklist[index];
+        const check = document.getElementById(`item${index}`).checked;
+        const comentario = document.getElementById(`comentario${index}`).value.trim();
+        const archivoInput = document.getElementById(`archivo${index}`);
+        const archivo = archivoInput.files[0];
+
+        if (!check && comentario === "") {
+          alert(`Debes agregar un comentario para: "${item}"`);
+          return;
+        }
+
+        resultado += `<li>${item}: ${check ? '✔️ OK' : `❌ FALTA <br><em>Comentario:</em> ${comentario}`}</li>`;
+
+        if (!check && archivo) {
+          const url = URL.createObjectURL(archivo);
+          if (archivo.type.startsWith("image")) {
+            evidenciaHTML.push(`<strong>Evidencia de "${item}":</strong><br><img src="${url}" alt="${item}"><br>`);
+          } else if (archivo.type.startsWith("video")) {
+            evidenciaHTML.push(`<strong>Evidencia de "${item}":</strong><br><video controls src="${url}"></video><br>`);
+          }
+        }
+      }
+
+      resultado += "</ul>";
+      resultado += evidenciaHTML.join("");
+      document.getElementById('resultado').innerHTML = resultado;
+    }
+
+    function guardarComoPDF() {
+      const contenido = document.getElementById('resultado');
+      if (contenido.innerHTML.trim() === "") {
+        alert("Primero debes generar el reporte.");
+        return;
+      }
+      window.print();
+    }
+  </script>
+
+</body>
+</html>

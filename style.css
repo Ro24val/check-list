@@ -1,0 +1,50 @@
+* { box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1c3e5c;
+}
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+select, input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 1rem;
+}
+.checklist-item {
+  border: 1px solid #ddd;
+  background: #f4f7fa;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+.comentario, .evidencia {
+  display: none;
+}
+canvas {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1.4rem;
+  }
+}
